@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cards</title>
+    <link rel="shortcut icon" href="assets/credit-card.png" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .card {
+            aspect-ratio: 1.586 / 1;
+            /* Credit card aspect ratio */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-backdrop {
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        .fa-cc-visa {
+            color: #1a1f71;
+        }
+
+        .fa-cc-mastercard {
+            color: #eb001b;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white">
+
+    <!-- Header -->
+    <header class="bg-gray-900/80 backdrop-blur-sm sticky top-0 z-40">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Jose Vaulted</h1>
+            <div class="relative">
+                <button id="profileButton" class="flex items-center space-x-2">
+                    <img id="profileImage" src="https://placehold.co/40x40/4A5568/E2E8F0?text=A"
+                        class="w-10 h-10 rounded-full border-2 border-gray-600">
+                    <span id="userEmail" class="text-gray-300">loading...</span>
+                    <i class="fa fa-chevron-down text-xs text-gray-400"></i>
+                </button>
+                <div id="profileDropdown"
+                    class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-1 hidden">
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Profile</a>
+                    <button id="signOutButton"
+                        class="w-full text-left block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700">Sign
+                        Out</button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold">Your Collection</h2>
+            <button id="addCardBtn"
+                class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition ease-in-out duration-150">
+                <i class="fa fa-plus mr-2"></i>Add New Card
+            </button>
+        </div>
+
+        <!-- Cards Grid -->
+        <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Cards will be dynamically inserted here -->
+        </div>
+        <p id="noCardsMessage" class="text-center text-gray-400 mt-16 text-lg hidden">You don't have any cards yet.
+            Click "Add New Card" to get started!</p>
+    </main>
+
+    <!-- Add Card Modal -->
+    <div id="addCardModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 modal-backdrop hidden">
+        <div class="bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6 m-4">
+            <h3 class="text-xl font-semibold mb-4">Add a New Card</h3>
+            <form id="addCardForm">
+                <div class="space-y-4">
+                    <div>
+                        <label for="cardHolderName" class="block text-sm font-medium text-gray-300">Card Holder
+                            Name</label>
+                        <input type="text" id="cardHolderName" required
+                            class="mt-1 w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                    <div>
+                        <label for="cardNumber" class="block text-sm font-medium text-gray-300">Card Number</label>
+                        <input type="text" id="cardNumber" required
+                            class="mt-1 w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            placeholder="•••• •••• •••• ••••" maxlength="19">
+                    </div>
+                    <div class="flex space-x-4">
+                        <div class="flex-1">
+                            <label for="expirationDate" class="block text-sm font-medium text-gray-300">Expiration
+                                Date</label>
+                            <input type="text" id="expirationDate" required
+                                class="mt-1 w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="MM/YY">
+                        </div>
+                        <div class="flex-1">
+                            <label for="cvc" class="block text-sm font-medium text-gray-300">CVC</label>
+                            <input type="text" id="cvc" required
+                                class="mt-1 w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="•••" maxlength="4">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" id="cancelAddCard"
+                        class="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg font-semibold">Cancel</button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold">Save Card</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // --- SUPABASE CLIENT SETUP ---
+        const { createClient } = supabase;
+        const SUPABASE_URL = 'https://ijjhybhxrxtzaykkdugc.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlqamh5Ymh4cnh0emF5a2tkdWdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0NjUzNjIsImV4cCI6MjA3NDA0MTM2Mn0.EO2tQ7pAgXJGAPFOg6CbyuEsytseUEL0rqOuDLI0Ors';
+
+        if (SUPABASE_URL === 'YOUR_SUPABASE_URL' || SUPABASE_ANON_KEY === 'YOUR_SUPABASE_ANON_KEY') {
+            document.getElementById('cardsGrid').innerHTML = `<div class="col-span-3 text-center bg-red-900/50 p-8 rounded-lg"><h3 class="text-xl text-red-300">Configuration Error! Please add your Supabase credentials to cards.html.</h3></div>`;
+            throw new Error("Supabase credentials are not configured.");
+        }
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // --- PAGE ELEMENTS ---
+        const profileButton = document.getElementById('profileButton');
+        const profileDropdown = document.getElementById('profileDropdown');
+        const signOutButton = document.getElementById('signOutButton');
+        const userEmailSpan = document.getElementById('userEmail');
+        const addCardBtn = document.getElementById('addCardBtn');
+        const addCardModal = document.getElementById('addCardModal');
+        const cancelAddCardBtn = document.getElementById('cancelAddCard');
+        const addCardForm = document.getElementById('addCardForm');
+        const cardsGrid = document.getElementById('cardsGrid');
+        const noCardsMessage = document.getElementById('noCardsMessage');
+
+        let currentUser = null;
+
+        // --- CORE FUNCTIONS ---
+
+        /**
+         * Fetches and displays cards for the current user.
+         */
+        async function fetchAndDisplayCards() {
+            if (!currentUser) return;
+
+            const { data, error } = await supabaseClient
+                .from('cards')
+                .select('*')
+                .eq('user_id', currentUser.id);
+
+            if (error) {
+                console.error('Error fetching cards:', error.message);
+                return;
+            }
+
+            cardsGrid.innerHTML = ''; // Clear existing cards
+            if (data.length === 0) {
+                noCardsMessage.classList.remove('hidden');
+            } else {
+                noCardsMessage.classList.add('hidden');
+                data.forEach(card => {
+                    const cardElement = createCardElement(card);
+                    cardsGrid.appendChild(cardElement);
+                });
+            }
+        }
+
+        /**
+         * Creates an HTML element for a single card.
+         * @param {object} cardData The data for the card.
+         * @returns {HTMLElement} The card element.
+         */
+        function createCardElement(cardData) {
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'card rounded-xl bg-gradient-to-br from-gray-700 to-gray-800 p-6 flex flex-col justify-between text-white shadow-lg';
+
+            const cardTypeIcon = getCardTypeIcon(cardData.card_number);
+
+            cardDiv.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <span class="font-semibold text-lg">SOURCE BANK</span>
+                    <i class="fa-brands ${cardTypeIcon} text-4xl text-white/80"></i>
+                </div>
+                <div class="text-center my-4">
+                    <span class="text-2xl font-mono tracking-widest">${maskCardNumber(cardData.card_number)}</span>
+                </div>
+                <div class="flex justify-between items-end">
+                    <div>
+                        <span class="text-xs font-semibold">Card Holder</span>
+                        <p class="font-medium">${cardData.card_holder_name}</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-semibold">Expires</span>
+                        <p class="font-medium">${cardData.expiration_date}</p>
+                    </div>
+                </div>
+            `;
+            return cardDiv;
+        }
+
+        /**
+         * Masks a card number, showing only the last 4 digits.
+         * @param {string} cardNumber The full card number.
+         * @returns {string} The masked card number.
+         */
+        function maskCardNumber(cardNumber) {
+            return `**** **** **** ${cardNumber.slice(-4)}`;
+        }
+
+        /**
+         * Detects card type from the card number.
+         * @param {string} cardNumber The card number.
+         * @returns {string} Font Awesome icon class for the card type.
+         */
+        function getCardTypeIcon(cardNumber) {
+            if (cardNumber.startsWith('4')) {
+                return 'fa-cc-visa';
+            } else if (cardNumber.startsWith('5') || cardNumber.startsWith('2')) {
+                return 'fa-cc-mastercard';
+            }
+            return 'fa-credit-card'; // Default icon
+        }
+
+
+        // --- AUTHENTICATION & PAGE SETUP ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = 'auth.html';
+                return;
+            }
+            currentUser = session.user;
+            userEmailSpan.textContent = currentUser.email;
+            await fetchAndDisplayCards();
+        });
+
+        // --- EVENT LISTENERS ---
+
+        profileButton.addEventListener('click', () => profileDropdown.classList.toggle('hidden'));
+        signOutButton.addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        });
+
+        addCardBtn.addEventListener('click', () => addCardModal.classList.remove('hidden'));
+        cancelAddCardBtn.addEventListener('click', () => addCardModal.classList.add('hidden'));
+        addCardModal.addEventListener('click', (e) => {
+            if (e.target === addCardModal) addCardModal.classList.add('hidden');
+        });
+
+        addCardForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const cardData = {
+                card_holder_name: document.getElementById('cardHolderName').value,
+                card_number: document.getElementById('cardNumber').value,
+                expiration_date: document.getElementById('expirationDate').value,
+                cvc: document.getElementById('cvc').value,
+                user_id: currentUser.id
+            };
+
+            const { error } = await supabaseClient.from('cards').insert([cardData]);
+
+            if (error) {
+                console.error('Error saving card:', error.message);
+                alert('Could not save the card.');
+            } else {
+                addCardForm.reset();
+                addCardModal.classList.add('hidden');
+                await fetchAndDisplayCards(); // Refresh the list
+            }
+        });
+    </script>
+</body>
+
+</html>

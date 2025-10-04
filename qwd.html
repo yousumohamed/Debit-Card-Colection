@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Sign Up - My Cards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-container {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
+
+    <!-- Background Glows -->
+    <div
+        class="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/30 rounded-full blur-3xl opacity-50">
+    </div>
+    <div
+        class="absolute bottom-0 right-0 translate-x-1/2 translate-y-1/2 w-[600px] h-[600px] bg-blue-600/30 rounded-full blur-3xl opacity-50">
+    </div>
+
+    <div class="relative z-10 w-full max-w-md">
+        <div class="bg-gray-800/50 border border-gray-700 rounded-2xl shadow-xl p-8 form-container">
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-700 mb-6">
+                <button id="signInTab"
+                    class="flex-1 py-2 text-center font-semibold border-b-2 border-white text-white">Sign In</button>
+                <button id="signUpTab"
+                    class="flex-1 py-2 text-center font-semibold border-b-2 border-transparent text-gray-400">Sign
+                    Up</button>
+            </div>
+
+            <!-- Sign In Form -->
+            <form id="signInForm" class="">
+                <h2 class="text-2xl font-bold text-center mb-2">Welcome Back!</h2>
+                <p class="text-gray-400 text-center mb-6">Sign in to continue to your cards.</p>
+                <div class="space-y-4">
+                    <div>
+                        <label for="signInEmail" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                        <input type="email" id="signInEmail" required
+                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            placeholder="you@example.com">
+                    </div>
+                    <div>
+                        <label for="signInPassword"
+                            class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+                        <div class="relative">
+                            <input type="password" id="signInPassword" required
+                                class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="••••••••">
+                            <button type="button"
+                                class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400"
+                                onclick="togglePasswordVisibility('signInPassword')">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit"
+                    class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg mt-6 transition">Sign
+                    In</button>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signUpForm" class="hidden">
+                <h2 class="text-2xl font-bold text-center mb-2">Create an Account</h2>
+                <p class="text-gray-400 text-center mb-6">Get started by creating your new account.</p>
+                <div class="space-y-4">
+                    <div>
+                        <label for="signUpUsername"
+                            class="block text-sm font-medium text-gray-300 mb-1">Username</label>
+                        <input type="text" id="signUpUsername" required
+                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            placeholder="yourusername">
+                    </div>
+                    <div>
+                        <label for="signUpEmail" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                        <input type="email" id="signUpEmail" required
+                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            placeholder="you@example.com">
+                    </div>
+                    <div>
+                        <label for="signUpPassword"
+                            class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+                        <div class="relative">
+                            <input type="password" id="signUpPassword" required
+                                class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="••••••••">
+                            <button type="button"
+                                class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-400"
+                                onclick="togglePasswordVisibility('signUpPassword')">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="signUpAge" class="block text-sm font-medium text-gray-300 mb-1">Age</label>
+                        <input type="number" id="signUpAge" required
+                            class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            placeholder="18">
+                    </div>
+                </div>
+                <button type="submit"
+                    class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg mt-6 transition">Sign
+                    Up</button>
+            </form>
+
+            <!-- Message Div -->
+            <div id="message" class="text-center text-red-400 mt-4"></div>
+
+            <!-- Social Logins -->
+            <div class="mt-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-700"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-gray-800 text-gray-400">Or continue with</span>
+                    </div>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <div>
+                        <button id="googleLogin"
+                            class="w-full inline-flex justify-center py-2 px-4 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-sm font-medium text-white hover:bg-gray-600">
+                            <i class="fab fa-google mr-2 mt-0.5"></i> Google
+                        </button>
+                    </div>
+                    <div>
+                        <button id="githubLogin"
+                            class="w-full inline-flex justify-center py-2 px-4 border border-gray-600 rounded-md shadow-sm bg-gray-700 text-sm font-medium text-white hover:bg-gray-600">
+                            <i class="fab fa-github mr-2 mt-0.5"></i> GitHub
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center text-sm text-gray-400 mt-6">
+                <a href="index.html" class="hover:text-white">← Back to Home</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // --- UI LOGIC (Tabs and Password visibility) ---
+        const signInTab = document.getElementById('signInTab');
+        const signUpTab = document.getElementById('signUpTab');
+        const signInForm = document.getElementById('signInForm');
+        const signUpForm = document.getElementById('signUpForm');
+
+        signInTab.addEventListener('click', () => {
+            signInForm.classList.remove('hidden');
+            signUpForm.classList.add('hidden');
+            signInTab.classList.add('border-white', 'text-white');
+            signInTab.classList.remove('border-transparent', 'text-gray-400');
+            signUpTab.classList.add('border-transparent', 'text-gray-400');
+            signUpTab.classList.remove('border-white', 'text-white');
+        });
+
+        signUpTab.addEventListener('click', () => {
+            signUpForm.classList.remove('hidden');
+            signInForm.classList.add('hidden');
+            signUpTab.classList.add('border-white', 'text-white');
+            signUpTab.classList.remove('border-transparent', 'text-gray-400');
+            signInTab.classList.add('border-transparent', 'text-gray-400');
+            signInTab.classList.remove('border-white', 'text-white');
+        });
+
+        function togglePasswordVisibility(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = passwordInput.nextElementSibling.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
+
+    <script type="module">
+        // --- SUPABASE AUTHENTICATION LOGIC ---
+
+        const { createClient } = supabase;
+
+        // ===================================================================
+        // --- IMPORTANT: PLACE YOUR SUPABASE CREDENTIALS HERE ---
+        // You can find these in your Supabase project settings under "API"
+        //
+        // 1. Go to your Supabase project.
+        // 2. Click on the 'Settings' gear icon on the left.
+        // 3. Click on 'API' in the settings menu.
+        // 4. Copy the 'Project URL' and the 'anon' 'public' key.
+        // ===================================================================
+        const SUPABASE_URL = 'https://ijjhybhxrxtzaykkdugc.supabase.co'; // Replace with your Supabase Project URL
+        const SUPABASE_ANON_KEY = ''; // Replace with your Supabase Anon Key
+        // ===================================================================
+
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const messageDiv = document.getElementById('message');
+
+        // --- Sign Up ---
+        signUpForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const email = document.getElementById('signUpEmail').value;
+            const password = document.getElementById('signUpPassword').value;
+            const username = document.getElementById('signUpUsername').value;
+            const age = document.getElementById('signUpAge').value;
+
+            messageDiv.textContent = ''; // Clear previous messages
+
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        username: username,
+                        age: age
+                    }
+                }
+            });
+
+            if (error) {
+                console.error('Sign up error:', error.message);
+                messageDiv.textContent = error.message;
+            } else {
+                console.log('Sign up successful! Please check your email to verify.', data);
+                // Redirect to the cards page after successful signup
+                window.location.href = 'cards.html';
+            }
+        });
+
+        // --- Sign In ---
+        signInForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const email = document.getElementById('signInEmail').value;
+            const password = document.getElementById('signInPassword').value;
+
+            messageDiv.textContent = ''; // Clear previous messages
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                console.error('Sign in error:', error.message);
+                messageDiv.textContent = 'Invalid login credentials.';
+            } else {
+                console.log('Sign in successful!', data);
+                // Redirect to the cards page after successful signin
+                window.location.href = 'cards.html';
+            }
+        });
+
+        // --- Social Logins ---
+        document.getElementById('googleLogin').addEventListener('click', async () => {
+            const { error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google' });
+            if (error) console.error('Google login error:', error.message);
+        });
+
+        document.getElementById('githubLogin').addEventListener('click', async () => {
+            const { error } = await supabaseClient.auth.signInWithOAuth({ provider: 'github' });
+            if (error) console.error('GitHub login error:', error.message);
+        });
+
+    </script>
+
+</body>
+
+</html>
