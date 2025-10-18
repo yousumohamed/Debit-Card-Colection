@@ -53,7 +53,7 @@
 <h1 align="center">My Cards Collection Demo-app</h1>
 
 <p align="center">
-An advanced, secure, and feature-rich web application for managing credit/debit card information, built with vanilla JavaScript and modern web technologies.
+An advanced,  secure, and feature-rich web application for managing credit/debit card information, built with vanilla JavaScript and modern web technologies.
 </p>
 
 <!-- <p align="center">
