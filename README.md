@@ -50,7 +50,7 @@
 <img src="https://www.google.com/search?q=https://placehold.co/800x200/1e293b/ffffff%3Ftext%3DMy%2BCards%2BCollection%2BApp%26font%3Dinter" alt="Project Banner">
 </p> -->
 
-<h1 align="center">My Cards Collection App</h1>
+<h1 align="center">My Cards Collection Demo-app</h1>
 
 <p align="center">
 An advanced, secure, and feature-rich web application for managing credit/debit card information, built with vanilla JavaScript and modern web technologies.
